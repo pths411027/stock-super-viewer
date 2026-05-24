@@ -30,9 +30,7 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <Providers>
-          <div className="mx-auto w-full max-w-120 bg-amber-300">
-            {children}
-          </div>
+          <div className="mx-auto w-full max-w-120">{children}</div>
         </Providers>
       </body>
     </html>
