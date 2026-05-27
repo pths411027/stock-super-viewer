@@ -12,15 +12,14 @@ export function StockCard({
     2,
   );
 
-  console.log(change, changePercent);
   return (
-    <div className="flex flex-col items-center border border-red-500">
-      <h3 className="w-full bg-gray-300 text-center text-2xl font-bold">
-        {name}
-      </h3>
-      <div className="text-[48px] font-bold text-red-500">{lastPrice}</div>
-      <div className="flex w-full justify-between px-1 text-xl text-red-500">
-        <p>{change}</p>
+    <div className="flex flex-row items-center gap-2 rounded-md border border-[#FFFFFF10] p-2">
+      <div className="size-4 rounded-bl-lg bg-white" />
+      <h3 className="flex-1 font-bold text-[#F8FAFC]">{name}</h3>
+      {/* <div className="text-[48px] font-bold text-red-500">{lastPrice}</div> */}
+      <div className="flex justify-between gap-1 px-1 font-bold text-green-600">
+        {/* <p>{change}</p> */}
+        <h3 className="flex-1 text-sm font-bold text-[#CBD5E1]">敘述</h3>
         <p>{changePercent} %</p>
       </div>
     </div>
