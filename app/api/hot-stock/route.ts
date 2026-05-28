@@ -16,11 +16,16 @@ async function GetStockPrice(stockID: string) {
 
   const data = await response.json();
 
+  console.log(data);
+
   return {
     id: stockID,
     name: data.name,
     referencePrice: data.referencePrice,
     lastPrice: data.lastPrice,
+    total: data.total.tradeVolume,
+    change: data.change,
+    changePercent: data.changePercent,
   };
 }
 

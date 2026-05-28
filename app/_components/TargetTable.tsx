@@ -1,10 +1,39 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { PriceLineChart } from "./PriceLineChart";
+import { useQuery } from "@tanstack/react-query";
+
+// const COLORS = [];
+// D52B1E
+//   0046A8
+//   0A6E34
+
+//   005EA8
+//   E8B84A
+//   9D3F8C
 
 export function TargetTable() {
+  const { data } = useQuery({
+    queryKey: ["hot-stock"],
+    queryFn: async () => {
+      const res = await fetch("/api/hot-stock", { cache: "no-store" });
+      const json = await res.json();
+      return json.data as Array<{
+        id: string;
+        name: string;
+        referencePrice: number;
+        lastPrice: number;
+        total: number;
+        change: number;
+        changePercent: number;
+      }>;
+    },
+    refetchInterval: 60_000,
+  });
+
   const activeIndex = 0;
 
+  console.log(data);
   // console.log(activeIndex);
   return (
     <div className="relative mt-2 h-100 w-full overflow-scroll rounded-2xl">
@@ -23,35 +52,34 @@ export function TargetTable() {
           </div>
         ))}
       </div>
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i, index) => (
+      {data?.map((i, index) => (
         <div
-          key={i}
+          key={i.id}
           className={cn(
             "z-1 flex w-full items-center p-1 px-2",
-            index === activeIndex && "bg-[rgba(59,203,142,.12)]",
+            // index === activeIndex && "bg-[rgba(59,203,142,.12)]",
           )}
         >
           <div className="size-8 rounded-sm bg-[#D52B1E] text-center text-xs leading-8 font-bold text-[#F5F1E6]">
-            2330
+            {i.id}
           </div>
           <div className="w-16 px-3">
-            <div className="font-bold text-[#F5F1E6]">3481</div>
-            <div className="text-xs text-[#5A564E]">群創</div>
+            <div className="font-bold text-[#F5F1E6]">{i.id}</div>
+            <div className="text-xs text-[#5A564E]">{i.name}</div>
           </div>
 
           {/* <div className="flex-1"></div> */}
           <div className="flex flex-1 justify-center">
-            {" "}
-            <PriceLineChart />
+            <PriceLineChart id={i.id} />
           </div>
 
           <div className="w-24 px-3 font-bold">
-            <div className="font-bold text-[#3BCB8E]">2330.5</div>
-            <div className="text-xs text-[#5A564E]">成交1500張</div>
+            <div className="font-bold text-[#3BCB8E]">{i.lastPrice}</div>
+            <div className="text-xs text-[#5A564E]">{`成交${i.total}張`}</div>
           </div>
           <div className="w-15">
             <div className="rounded-sm bg-[#3BCB8E] p-1 text-center text-sm font-bold">
-              +3.2%
+              {`${i.changePercent}%`}
             </div>
           </div>
         </div>
