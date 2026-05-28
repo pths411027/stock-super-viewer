@@ -1,10 +1,9 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 import { PriceLineChart } from "./PriceLineChart";
 
 export function TargetTable() {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndex = 0;
 
   // console.log(activeIndex);
   return (
@@ -15,9 +14,9 @@ export function TargetTable() {
             key={i}
             className={cn(
               index === 0 && "w-24 pr-4 text-end",
-              index === 1 && "w-20 text-center",
-              index === 2 && "w-24",
-              index === 3 && "text-center",
+              index === 1 && "flex-1 text-center",
+              index === 2 && "w-24 px-3",
+              index === 3 && "w-15 text-center",
             )}
           >
             {i}
@@ -35,13 +34,17 @@ export function TargetTable() {
           <div className="size-8 rounded-sm bg-[#D52B1E] text-center text-xs leading-8 font-bold text-[#F5F1E6]">
             2330
           </div>
-          <div className="w-16 flex-1 px-3">
+          <div className="w-16 px-3">
             <div className="font-bold text-[#F5F1E6]">3481</div>
             <div className="text-xs text-[#5A564E]">群創</div>
           </div>
 
           {/* <div className="flex-1"></div> */}
-          <PriceLineChart />
+          <div className="flex flex-1 justify-center">
+            {" "}
+            <PriceLineChart />
+          </div>
+
           <div className="w-24 px-3 font-bold">
             <div className="font-bold text-[#3BCB8E]">2330.5</div>
             <div className="text-xs text-[#5A564E]">成交1500張</div>

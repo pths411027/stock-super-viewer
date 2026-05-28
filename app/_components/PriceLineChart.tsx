@@ -58,7 +58,7 @@ export const data = {
 
 export function PriceLineChart() {
   return (
-    <div>
+    <div className="w-20">
       <Line options={options} data={data} height={30} width={80} />
     </div>
   );

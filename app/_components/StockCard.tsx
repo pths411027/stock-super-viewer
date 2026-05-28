@@ -7,7 +7,6 @@ export function StockCard({
   referencePrice: number;
   lastPrice: number;
 }) {
-  const change = (lastPrice - referencePrice).toFixed(2);
   const changePercent = ((lastPrice - referencePrice) / referencePrice).toFixed(
     2,
   );

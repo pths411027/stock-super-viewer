@@ -1,12 +1,9 @@
 "use client";
-import { StockCard } from "./_components/StockCard";
-import { Header } from "./_components/Header";
+import { StockCard } from "../_components/StockCard";
+import { Header } from "../_components/Header";
 import { useQuery } from "@tanstack/react-query";
-import { TargetTable } from "./_components/TargetTable";
-import { GoogleLoginButton } from "./_components/GoogleOauth/GoogleLoginButton";
-import { GoogleLogoutButton } from "./_components/GoogleOauth/GoogleLogoutButton";
-import { UserProfile } from "./_components/GoogleOauth/UserProfile";
-import { MarketOverview } from "./_components/MarketOverview";
+import { TargetTable } from "../_components/TargetTable";
+import { MarketOverview } from "../_components/MarketOverview";
 
 export default function Home() {
   const { data } = useQuery({
@@ -30,9 +27,6 @@ export default function Home() {
       <div className="px-2">
         <MarketOverview />
       </div>
-      <UserProfile />
-      <GoogleLoginButton />
-      <GoogleLogoutButton />
 
       <div className="mt-4 px-2">
         <div className="grid grid-cols-1 gap-2">

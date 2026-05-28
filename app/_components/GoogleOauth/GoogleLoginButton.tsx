@@ -9,15 +9,19 @@ export function GoogleLoginButton() {
 
   return (
     <button
-      className="text-yellow rounded-md bg-white px-3 py-2 text-sm font-medium"
+      className="text-yellow rounded-md border border-[#F5F1E6] px-5 py-2 text-sm font-bold text-[#F5F1E6]"
       disabled={isLoading}
       onClick={async () => {
         setIsLoading(true);
         try {
-          const redirectTo = `${window.location.origin}/auth/callback`;
           await supabase.auth.signInWithOAuth({
             provider: "google",
-            options: { redirectTo },
+            options: {
+              // Keep `next` so the server callback can redirect to where the user intended.
+              redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(
+                "/",
+              )}`,
+            },
           });
         } finally {
           setIsLoading(false);
@@ -25,7 +29,7 @@ export function GoogleLoginButton() {
       }}
       type="button"
     >
-      登入
+      Google
     </button>
   );
 }
