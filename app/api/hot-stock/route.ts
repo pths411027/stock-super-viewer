@@ -1,22 +1,42 @@
-import { createClient } from "@supabase/supabase-js";
+import { fugleHandler } from "@/lib/fugle";
 export const dynamic = "force-dynamic";
 
-async function GetStockPrice(stockID: string) {
-  const url = `https://api.fugle.tw/marketdata/v1.0/stock/intraday/quote/${stockID}`;
-  const FUGLE_API_KEY = process.env.FUGLE_API_KEY as string;
-  const options = {
-    method: "get",
-    headers: {
-      "X-API-KEY": FUGLE_API_KEY,
-    },
-    muteHttpExceptions: true,
+export type FugleQuote = {
+  name: string;
+  referencePrice: number;
+  lastPrice: number;
+  total: {
+    tradeVolume: number;
   };
+  change: number;
+  changePercent: number;
+};
 
-  const response = await fetch(url, options);
+export type FugleSnapshotActives = {
+  data: Array<{
+    type: string;
+    symbol: string;
+  }>;
+};
 
-  const data = await response.json();
+async function GetMostPoppularStocks() {
+  const data = await fugleHandler<FugleSnapshotActives>(
+    `/snapshot/actives/TSE`,
+    {
+      trade: "volume",
+      type: "COMMONSTOCK",
+    },
+  );
 
-  console.log(data);
+  return data;
+}
+
+async function GetStockPrice(stockID: string) {
+  const data = await fugleHandler<FugleQuote>(
+    `/stock/intraday/quote/${stockID}`,
+    undefined,
+    { revalidate: 60 },
+  );
 
   return {
     id: stockID,
@@ -30,35 +50,14 @@ async function GetStockPrice(stockID: string) {
 }
 
 export async function GET() {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return Response.json(
-      { ok: false, error: "Missing SUPABASE_URL or SUPABASE_ANON_KEY" },
-      { status: 500 },
+  const { data } = await GetMostPoppularStocks();
+  let stockList = [];
+  try {
+    stockList = await Promise.all(
+      data.slice(0, 10).map(({ symbol }) => GetStockPrice(symbol)),
     );
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    auth: { persistSession: false },
-  });
-
-  const { data, error } = await supabase.from("hot_stock").select("*");
-
-  const stockList = await Promise.all(
-    (data as { stock_id: string }[]).map((row) =>
-      GetStockPrice(String(row.stock_id)),
-    ),
-  );
-
-  console.log(stockList);
-
-  if (error) {
-    return Response.json(
-      { ok: false, error: error.message, code: error.code },
-      { status: 502 },
-    );
+  } catch (e) {
+    return { error: e };
   }
 
   return Response.json({ ok: true, data: stockList });

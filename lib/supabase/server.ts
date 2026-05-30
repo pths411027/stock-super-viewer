@@ -1,3 +1,4 @@
+import "server-only";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
@@ -13,9 +14,10 @@ export async function createSupabaseServerClient() {
           return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
+          // In Next.js Server Components (layouts/pages), cookies are read-only.
+          // Only Route Handlers / Server Actions can write Set-Cookie.
+          // For writable cookies, create the client inside the Route Handler with NextResponse.
+          void cookiesToSet;
         },
       },
     },

@@ -8,7 +8,7 @@ export function MarketOverview() {
             <span className="mr-1/2 text-lg font-bold text-[#E8B84A]">
               95831
             </span>{" "}
-            <span className="text-xs font-bold text-[#3BCB8E]">+1200</span>
+            <span className="text-down text-xs font-bold">+1200</span>
           </div>
         </div>
         <div className="h-[80%] w-0.5 bg-[#5A564E]"></div>
@@ -24,13 +24,10 @@ export function MarketOverview() {
         <div className="px-2">
           <p className="mb-1/2 text-xs text-[#5A564E]">漲跌家數</p>
           <div>
-            <span className="mr-1/2 text-lg font-bold text-[#3BCB8E]">
-              300/120
-            </span>
+            <span className="mr-1/2 text-down text-lg font-bold">300/120</span>
           </div>
         </div>
       </div>
-      123
     </div>
   );
 }

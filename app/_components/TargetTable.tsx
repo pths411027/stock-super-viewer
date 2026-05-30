@@ -3,14 +3,26 @@ import { cn } from "@/lib/utils";
 import { PriceLineChart } from "./PriceLineChart";
 import { useQuery } from "@tanstack/react-query";
 
-// const COLORS = [];
-// D52B1E
-//   0046A8
-//   0A6E34
+const PALETTE = [
+  "#D52B1E",
+  "#0046A8",
+  "#0A6E34",
+  "#005EA8",
+  "#E8B84A",
+  "#9D3F8C",
+] as const;
 
-//   005EA8
-//   E8B84A
-//   9D3F8C
+function hashToIndex6(input: string) {
+  let h = 0;
+  for (let i = 0; i < input.length; i++) {
+    h = (h * 31 + input.charCodeAt(i)) >>> 0;
+  }
+  return h % 6;
+}
+
+export function colorForId(id: string) {
+  return PALETTE[hashToIndex6(id)];
+}
 
 export function TargetTable() {
   const { data } = useQuery({
@@ -31,10 +43,9 @@ export function TargetTable() {
     refetchInterval: 60_000,
   });
 
-  const activeIndex = 0;
-
-  console.log(data);
+  // console.log(data);
   // console.log(activeIndex);
+  console.log(data);
   return (
     <div className="relative mt-2 h-100 w-full overflow-scroll rounded-2xl">
       <div className="sticky top-0 z-2 flex w-full bg-[#0e0d0b] px-2 py-1 text-sm text-[#5A564E]">
@@ -42,9 +53,9 @@ export function TargetTable() {
           <div
             key={i}
             className={cn(
-              index === 0 && "w-24 pr-4 text-end",
-              index === 1 && "flex-1 text-center",
-              index === 2 && "w-24 px-3",
+              index === 0 && "w-24 flex-1 pl-12",
+              index === 1 && "w-15 text-center",
+              index === 2 && "w-24 px-2",
               index === 3 && "w-15 text-center",
             )}
           >
@@ -52,33 +63,42 @@ export function TargetTable() {
           </div>
         ))}
       </div>
-      {data?.map((i, index) => (
-        <div
-          key={i.id}
-          className={cn(
-            "z-1 flex w-full items-center p-1 px-2",
-            // index === activeIndex && "bg-[rgba(59,203,142,.12)]",
-          )}
-        >
-          <div className="size-8 rounded-sm bg-[#D52B1E] text-center text-xs leading-8 font-bold text-[#F5F1E6]">
-            {i.id}
-          </div>
-          <div className="w-16 px-3">
-            <div className="font-bold text-[#F5F1E6]">{i.id}</div>
-            <div className="text-xs text-[#5A564E]">{i.name}</div>
-          </div>
-
-          {/* <div className="flex-1"></div> */}
-          <div className="flex flex-1 justify-center">
-            <PriceLineChart id={i.id} />
+      {data?.map((i) => (
+        <div key={i.id} className={cn("z-1 flex w-full items-center p-1 px-2")}>
+          <div className="flex flex-1">
+            <div
+              className="size-8 rounded-sm text-center text-xs leading-8 font-bold text-[#F5F1E6]"
+              style={{ backgroundColor: colorForId(i.id) }}
+            >
+              {i.id}
+            </div>
+            <div className="w-16 flex-1 pl-3">
+              <div className="font-bold text-[#F5F1E6]">{i.id}</div>
+              <div className="text-xs text-[#5A564E]">{i.name}</div>
+            </div>
           </div>
 
-          <div className="w-24 px-3 font-bold">
-            <div className="font-bold text-[#3BCB8E]">{i.lastPrice}</div>
+          <div className="flex justify-end">
+            <PriceLineChart id={i.id} change={i.change} />
+          </div>
+          <div className="w-24 px-2 font-bold">
+            <div
+              className={cn(
+                "text-down font-bold",
+                i.change >= 0 ? "text-down" : "text-up",
+              )}
+            >
+              {i.lastPrice}
+            </div>
             <div className="text-xs text-[#5A564E]">{`成交${i.total}張`}</div>
           </div>
           <div className="w-15">
-            <div className="rounded-sm bg-[#3BCB8E] p-1 text-center text-sm font-bold">
+            <div
+              className={cn(
+                "rounded-sm p-1 text-center text-sm font-bold",
+                i.change >= 0 ? "bg-down" : "bg-up",
+              )}
+            >
               {`${i.changePercent}%`}
             </div>
           </div>

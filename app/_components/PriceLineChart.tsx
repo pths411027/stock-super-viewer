@@ -51,13 +51,13 @@ export const data = {
       // label: "Dataset 1",
       pointRadius: 0,
       data: [100, 94, 93, 98, 103, 109, 103],
-      borderColor: "#3BCB8E",
+      borderColor: "-down",
       backgroundColor: "rgba(255, 99, 132, 0.5)",
     },
   ],
 };
 
-export function PriceLineChart({ id }: { id: string }) {
+export function PriceLineChart({ id, change }: { id: string; change: number }) {
   const { data } = useQuery({
     queryKey: ["stock", "candles", id],
     queryFn: async () => {
@@ -69,16 +69,16 @@ export function PriceLineChart({ id }: { id: string }) {
     },
     refetchInterval: 60_000,
   });
-  console.log(data);
 
   const lineData = {
-    labels,
+    // labels,
+    labels: data?.map((_, index) => index + 1),
     datasets: [
       {
         // label: "Dataset 1",
-        pointRadius: 0,
+        pointRadius: 1,
         data,
-        borderColor: "#3BCB8E",
+        borderColor: change >= 0 ? "#3bcb8e" : "#f26b6b",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
       },
     ],
@@ -108,11 +108,9 @@ export function PriceLineChart({ id }: { id: string }) {
     },
   };
 
-  console.log(data);
-
   return (
-    <div className="w-20">
-      <Line options={options} data={lineData} height={30} width={80} />
+    <div className="w-15">
+      <Line options={options} data={lineData} height={30} width={60} />
     </div>
   );
 }
