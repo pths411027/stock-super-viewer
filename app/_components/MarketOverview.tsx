@@ -5,9 +5,7 @@ export function MarketOverview() {
         <div className="pl-2">
           <p className="mb-1/2 text-xs text-[#5A564E]">台股指數</p>
           <div>
-            <span className="mr-1/2 text-lg font-bold text-[#E8B84A]">
-              95831
-            </span>{" "}
+            <span className="mr-1/2 text-primary text-lg font-bold">95831</span>{" "}
             <span className="text-down text-xs font-bold">+1200</span>
           </div>
         </div>

@@ -51,7 +51,7 @@ function StockCard({
       </div>
       <div className="font-bold text-[#F5F1E6]">{price}</div>
       {isSelected && (
-        <div className="rounded-full bg-[#E8B84A] p-0.5">
+        <div className="bg-primary rounded-full p-0.5">
           {" "}
           <Image src={"/icons/tick.svg"} width={16} height={16} alt="tick" />
         </div>
@@ -89,7 +89,7 @@ export default function Follow() {
           setSelectedIndex(-1);
         }}
       />
-      <p className="text-sm text-[#E8B84A]">選擇股票</p>
+      <p className="text-primary text-sm">選擇股票</p>
       {data?.map(({ symbol, name, industry, lastPrice }, index) => (
         <StockCard
           key={symbol}

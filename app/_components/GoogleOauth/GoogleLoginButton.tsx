@@ -6,7 +6,6 @@ import { useMemo, useState } from "react";
 export function GoogleLoginButton() {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [isLoading, setIsLoading] = useState(false);
-
   return (
     <button
       className="text-yellow rounded-md border border-[#F5F1E6] px-5 py-2 text-sm font-bold text-[#F5F1E6]"

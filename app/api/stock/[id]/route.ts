@@ -5,8 +5,6 @@ import type { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export type StockId = {};
-
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },

@@ -10,13 +10,21 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   const q = new URL(request.url).searchParams.get("q")?.trim() ?? "";
 
-  const { data } = await fugleHandler<{
-    data: Array<Tickers>;
-  }>(
-    `/stock/intraday/tickers`,
-    { type: "EQUITY", exchange: "TWSE", market: "TSE" },
-    { revalidate: 60 * 60 * 24 },
-  );
+  // const { data } = await fugleHandler<{
+  //   data: Array<Tickers>;
+  // }>(
+  //   `/stock/intraday/tickers`,
+  //   { type: "EQUITY", exchange: "TWSE", market: "TSE" },
+  //   { revalidate: 60 * 60 * 24 },
+  // );
+  // console.log(data);
+  const data = [
+    {
+      symbol: "2330",
+      name: "台積電",
+      industry: "23",
+    },
+  ];
 
   const items = await Promise.all(
     data

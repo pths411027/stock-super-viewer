@@ -15,9 +15,10 @@ export async function GET(request: NextRequest) {
   }>(
     `/stock/intraday/tickers`,
     { type: "EQUITY", exchange: "TWSE", market: "TSE" },
-    { revalidate: 60 * 60 * 24 },
+    // { revalidate: 0 },
   );
 
+  console.log(data);
   const items = await Promise.all(
     data
       .filter(

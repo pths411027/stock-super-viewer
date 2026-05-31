@@ -12,11 +12,43 @@ import {
 import { apiClient } from "@/lib/http";
 import { FugleQuoteResponse } from "@/lib/type";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 
 function Content() {
   const [value, setValue] = useState(1200);
+  const [rule, setRule] = useState("gt");
+
+  const { mutate } = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/follow", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          symbol: "2330",
+          price: value,
+          rule,
+          percent: null,
+          isTrigger: false,
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error ?? "建立關注失敗");
+      }
+
+      return res.json();
+    },
+    // onSuccess: (data) => {
+    //   console.log("建立成功", data);
+    // },
+    // onError: (error) => {
+    //   console.error("建立失敗", error);
+    // },
+  });
   return (
     <div className="mx-auto mt-2 w-full max-w-sm">
       <div className="h-16 w-full overflow-hidden rounded-md border border-[rgba(212,175,89,0.12)] bg-[#1F1D16] p-2">
@@ -37,14 +69,14 @@ function Content() {
         </div>
       </div>
       <div className="mx-auto w-full max-w-sm">
-        <p className="text-sm text-[#E8B84A]">選擇股票</p>
+        <p className="text-primary text-sm">選擇股票</p>
         <div
           className="rounded-md p-1"
           style={{ background: "rgba(232,184,74,0.18)" }}
         >
           <div className="bg-background rounded-md">
             <div
-              className="flex items-center justify-between gap-2 rounded-md border border-[#E8B84A] p-3 py-2"
+              className="border-primary flex items-center justify-between gap-2 rounded-md border p-3 py-2"
               style={{
                 background: "rgba(232,184,74,0.12)",
 
@@ -53,7 +85,7 @@ function Content() {
               // onClick={onClick}
             >
               <button
-                className="size-8 rounded-sm bg-[#1F1D16] text-center leading-8 font-bold text-[#E8B84A]"
+                className="text-primary size-8 rounded-sm bg-[#1F1D16] p-2 font-bold"
                 style={{ background: "rgba(212,175,89,0.12)" }}
                 onClick={() => setValue((prev) => Math.max(0, prev - 1))}
                 disabled={value <= 0}
@@ -70,18 +102,18 @@ function Content() {
                 type="number"
                 value={value}
                 onChange={(e) => setValue(Number(e.target.value))}
-                className="[appearance:textfield] text-center text-[#E8B84A] outline-none focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="text-primary [appearance:textfield] text-center outline-none focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 placeholder="請輸入股票代號或名稱"
               />
               <button
-                className="size-8 rounded-sm bg-[#1F1D16] text-center leading-8 font-bold text-[#E8B84A]"
+                className="text-primary size-8 rounded-sm bg-[#1F1D16] p-2 font-bold"
                 style={{ background: "rgba(212,175,89,0.12)" }}
                 onClick={() => setValue((prev) => Math.max(0, prev + 1))}
               >
                 <Image
                   src={"/icons/plus.svg"}
-                  width={24}
-                  height={24}
+                  width={16}
+                  height={16}
                   alt="search"
                   className="fill-[#8A857A]"
                 />
@@ -105,22 +137,72 @@ function Content() {
           ))}
         </div>
 
-        <div className="flex h-20">
-          <div className="p-2">
-            <div className="bg-background border-up size-4 overflow-hidden rounded-full border-6"></div>
-            <div className="text-up">
-              股價漲到
-              <Image
-                src={"/icons/up.svg"}
-                width={24}
-                height={24}
-                alt="search"
-                className="text-[#8A857A]"
+        <div className="flex h-20 gap-2">
+          <div
+            className={cn(
+              "flex flex-1 flex-col items-center justify-center gap-2 rounded-xl border p-2",
+              rule === "gt" ? "border-up" : "border-[#8A857A]",
+            )}
+            onClick={() => {
+              setRule("gt");
+            }}
+          >
+            {rule === "gt" ? (
+              <div
+                className={cn(
+                  "bg-background border-up size-4 overflow-hidden rounded-full border-5",
+                )}
               />
+            ) : (
+              <div className="bg-background size-4 overflow-hidden rounded-full border-2 border-[#8A857A]" />
+            )}
+
+            <div
+              className={cn(
+                "text-up font-bold",
+                rule === "gt" ? "text-up" : "text-[#F5F1E6]",
+              )}
+            >
+              股價漲到 ⬆
+            </div>
+          </div>
+          <div
+            className={cn(
+              "flex flex-1 flex-col items-center justify-center gap-2 rounded-xl border p-2",
+              rule === "lt" ? "border-down" : "border-[#8A857A]",
+            )}
+            onClick={() => {
+              setRule("lt");
+            }}
+          >
+            {rule === "lt" ? (
+              <div
+                className={cn(
+                  "bg-background border-down size-4 overflow-hidden rounded-full border-5",
+                )}
+              />
+            ) : (
+              <div className="bg-background size-4 overflow-hidden rounded-full border-2 border-[#8A857A]" />
+            )}
+
+            <div
+              className={cn(
+                "text-up font-bold",
+                rule === "lt" ? "text-down" : "text-[#F5F1E6]",
+              )}
+            >
+              股價跌到 ⬇
             </div>
           </div>
         </div>
-        <DrawerFooter></DrawerFooter>
+        <DrawerFooter>
+          <button
+            className="bg-primary rounded-lg py-2 text-lg font-bold shadow-[0_0_30px_rgba(232,184,74,0.5)]"
+            onClick={() => mutate()}
+          >
+            加入關注並設定提醒
+          </button>
+        </DrawerFooter>
       </div>
     </div>
   );
