@@ -16,7 +16,9 @@ export default async function ProtectedLayout({
 
   return (
     <>
-      <div className="relative mx-auto w-full max-w-120 pb-24">{children}</div>
+      <div className="relative mx-auto w-full max-w-120 px-2 pb-24">
+        {children}
+      </div>
       <Footer />
     </>
   );

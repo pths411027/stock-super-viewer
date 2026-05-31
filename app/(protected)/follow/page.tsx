@@ -28,7 +28,7 @@ function StockCard({
 }) {
   return (
     <div
-      className="mt-2 flex w-full items-center gap-2 rounded-md border border-[#E8B84A] p-3 py-2"
+      className="mt-2 flex w-full items-center gap-2 rounded-md border p-3 py-2"
       style={{
         background: isSelected
           ? "rgba(232,184,74,0.18)"
@@ -68,7 +68,7 @@ export default function Follow() {
     wait: 500,
   });
   const { data } = useQuery({
-    queryKey: ["stock", debouncedQ],
+    queryKey: ["stocks", debouncedQ],
     queryFn: async () => {
       const res = apiClient.get<
         Array<Tickers & { lastPrice: number; industry: string }>
@@ -104,7 +104,11 @@ export default function Follow() {
           }}
         />
       ))}
-      <StockDrawer open={open} onOpenChange={setOpen} />
+      <StockDrawer
+        open={open}
+        onOpenChange={setOpen}
+        id={data?.[selectedIndex]?.symbol}
+      />
     </div>
   );
 }

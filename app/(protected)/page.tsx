@@ -9,9 +9,6 @@ export default function Home() {
       <Header />
       <div className="px-2">
         <MarketOverview />
-      </div>
-
-      <div className="mt-4 px-2">
         <TargetTable />
       </div>
     </main>
