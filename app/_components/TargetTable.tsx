@@ -43,8 +43,6 @@ export function TargetTable() {
     refetchInterval: 60_000,
   });
 
-  // console.log(data);
-  // console.log(activeIndex);
   console.log(data);
   return (
     <div className="relative mt-2 h-100 w-full overflow-scroll rounded-2xl">

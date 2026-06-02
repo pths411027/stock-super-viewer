@@ -10,8 +10,8 @@ export async function GET(
 ) {
   const { id } = await params;
   const data = await fugleHandler<{ data: Array<{ average: number }> }>(
-    `/stock/intraday/quote/${id}`,
-    { revalidate: 60 },
+    `/stock/intraday/candles/${id}`,
+    // { revalidate: 60 },
   );
 
   return Response.json({

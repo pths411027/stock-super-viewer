@@ -57,7 +57,13 @@ export async function GET() {
       data.slice(0, 10).map(({ symbol }) => GetStockPrice(symbol)),
     );
   } catch (e) {
-    return { error: e };
+    return Response.json(
+      {
+        ok: false,
+        error: e instanceof Error ? e.message : "Unknown error",
+      },
+      { status: 500 },
+    );
   }
 
   return Response.json({ ok: true, data: stockList });

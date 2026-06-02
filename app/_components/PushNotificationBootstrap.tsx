@@ -17,6 +17,17 @@ function urlBase64ToUint8Array(base64String: string) {
 
 export function PushNotificationBootstrap() {
   useEffect(() => {
+    function handleServiceWorkerMessage(event: MessageEvent) {
+      if (event.data?.type !== "PUSH_RECEIVED") {
+        return;
+      }
+
+      console.log(
+        "[push] frontend received notification payload",
+        event.data.payload,
+      );
+    }
+
     async function registerPush() {
       if (
         !("serviceWorker" in navigator) ||
@@ -31,6 +42,13 @@ export function PushNotificationBootstrap() {
       }
 
       const registration = await navigator.serviceWorker.register("/sw.js");
+      await navigator.serviceWorker.ready;
+
+      console.log("[push] service worker registered", {
+        scope: registration.scope,
+        active: registration.active?.state,
+      });
+
       const permission =
         Notification.permission === "granted"
           ? "granted"
@@ -67,10 +85,24 @@ export function PushNotificationBootstrap() {
       if (!res.ok) {
         const error = await res.text();
         console.error("Failed to save push subscription", error);
+        return;
       }
+
+      console.log("[push] subscription saved");
     }
 
+    navigator.serviceWorker.addEventListener(
+      "message",
+      handleServiceWorkerMessage,
+    );
     void registerPush();
+
+    return () => {
+      navigator.serviceWorker.removeEventListener(
+        "message",
+        handleServiceWorkerMessage,
+      );
+    };
   }, []);
 
   return null;
