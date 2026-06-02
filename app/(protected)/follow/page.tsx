@@ -38,18 +38,18 @@ function StockCard({
       onClick={onClick}
     >
       <div
-        className="size-8 rounded-lg text-center text-xs leading-8 font-bold text-[#F5F1E6]"
+        className="text-cream size-8 rounded-lg text-center text-xs leading-8 font-bold"
         style={{ backgroundColor: "#D52B1E" }}
       >
         {id}
       </div>
       <div className="w-16 flex-1">
-        <div className="font-bold text-[#F5F1E6]">{name}</div>
+        <div className="text-cream font-bold">{name}</div>
         <div className="text-xs text-[#8A857A]">
           {id} · {type}
         </div>
       </div>
-      <div className="font-bold text-[#F5F1E6]">{price}</div>
+      <div className="text-cream font-bold">{price}</div>
       {isSelected && (
         <div className="bg-primary rounded-full p-0.5">
           {" "}

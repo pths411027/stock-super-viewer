@@ -1,4 +1,5 @@
 import { Footer } from "../_components/Footer";
+import { Header } from "../_components/Header";
 import { PushNotificationBootstrap } from "../_components/PushNotificationBootstrap";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -18,6 +19,7 @@ export default async function ProtectedLayout({
   return (
     <>
       <PushNotificationBootstrap />
+      <Header />
       <div className="relative mx-auto w-full max-w-120 px-2 pb-24">
         {children}
       </div>

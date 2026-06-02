@@ -54,12 +54,12 @@ function Content() {
       <div className="h-16 w-full overflow-hidden rounded-md border border-[rgba(212,175,89,0.12)] bg-[#1F1D16] p-2">
         <div className="flex h-full items-center justify-around">
           <div className="flex-1 pl-2">
-            <p className="mb-1/2 text-xs text-[#F5F1E6]">現價</p>
-            <div className="mr-1/2 text-lg font-bold text-[#F5F1E6]">95831</div>
+            <p className="mb-1/2 text-cream text-xs">現價</p>
+            <div className="mr-1/2 text-cream text-lg font-bold">95831</div>
           </div>
           <div className="h-[80%] w-0.5 bg-[rgba(212,175,89,0.12)]"></div>
           <div className="flex-1 px-2">
-            <p className="mb-1/2 text-xs text-[#F5F1E6]">差距</p>
+            <p className="mb-1/2 text-cream text-xs">差距</p>
             <div>
               <span className="mr-1/2 text-up text-lg font-bold">
                 +120 (2.4%)
@@ -128,7 +128,7 @@ function Content() {
               className={cn(
                 "w-full overflow-hidden rounded-md border border-[rgba(212,175,89,0.12)] bg-[#1F1D16] p-2 py-3 text-center font-bold",
                 percent > 0 && "text-up",
-                percent === 0 && "text-[#F5F1E6]",
+                percent === 0 && "text-cream",
                 percent < 0 && "text-down",
               )}
             >
@@ -160,7 +160,7 @@ function Content() {
             <div
               className={cn(
                 "text-up font-bold",
-                rule === "gt" ? "text-up" : "text-[#F5F1E6]",
+                rule === "gt" ? "text-up" : "text-cream",
               )}
             >
               股價漲到 ⬆
@@ -188,7 +188,7 @@ function Content() {
             <div
               className={cn(
                 "text-up font-bold",
-                rule === "lt" ? "text-down" : "text-[#F5F1E6]",
+                rule === "lt" ? "text-down" : "text-cream",
               )}
             >
               股價跌到 ⬇

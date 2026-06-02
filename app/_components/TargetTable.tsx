@@ -65,13 +65,13 @@ export function TargetTable() {
         <div key={i.id} className={cn("z-1 flex w-full items-center p-1 px-2")}>
           <div className="flex flex-1">
             <div
-              className="size-8 rounded-sm text-center text-xs leading-8 font-bold text-[#F5F1E6]"
+              className="text-cream size-8 rounded-sm text-center text-xs leading-8 font-bold"
               style={{ backgroundColor: colorForId(i.id) }}
             >
               {i.id}
             </div>
             <div className="w-16 flex-1 pl-3">
-              <div className="font-bold text-[#F5F1E6]">{i.id}</div>
+              <div className="text-cream font-bold">{i.id}</div>
               <div className="text-xs text-[#5A564E]">{i.name}</div>
             </div>
           </div>

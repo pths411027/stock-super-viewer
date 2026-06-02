@@ -8,7 +8,7 @@ export function GoogleLoginButton() {
   const [isLoading, setIsLoading] = useState(false);
   return (
     <button
-      className="text-yellow rounded-md border border-[#F5F1E6] px-5 py-2 text-sm font-bold text-[#F5F1E6]"
+      className="text-yellow border-cream text-cream rounded-md border px-5 py-2 text-sm font-bold"
       disabled={isLoading}
       onClick={async () => {
         setIsLoading(true);

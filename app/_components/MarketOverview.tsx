@@ -13,7 +13,7 @@ export function MarketOverview() {
         <div className="pl-2">
           <p className="mb-1/2 text-xs text-[#5A564E]">成交金額</p>
           <div>
-            <span className="mr-1/2 text-lg font-bold text-[#F5F1E6]">
+            <span className="mr-1/2 text-cream text-lg font-bold">
               $ 1200 億
             </span>{" "}
           </div>
