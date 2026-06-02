@@ -14,11 +14,22 @@ export async function POST(request: Request) {
   const supabaseUrl =
     process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const missingEnv = [
+    !supabaseUrl ? "SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL" : null,
+    !supabaseServiceRoleKey ? "SUPABASE_SERVICE_ROLE_KEY" : null,
+  ].filter(Boolean);
 
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
+  if (missingEnv.length > 0) {
+    console.error("[push/subscribe] missing env", {
+      missingEnv,
+      hasSupabaseUrl: Boolean(supabaseUrl),
+      hasNextPublicSupabaseUrl: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
+      hasServiceRoleKey: Boolean(supabaseServiceRoleKey),
+    });
+
     return Response.json(
       {
-        error: "Missing SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY",
+        error: `Missing env: ${missingEnv.join(", ")}`,
       },
       { status: 500 },
     );
