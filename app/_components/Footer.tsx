@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 const TABS = ["行情", "標的", "新增", "我的"] as const;
 
 function TabIndicator({
@@ -26,7 +26,7 @@ function TabIndicator({
 
 export function Footer() {
   const [activeTab, setActiveTab] = useState(0);
-
+  const router = useRouter();
   return (
     <div className="fixed inset-x-0 bottom-0">
       <div className="mx-auto w-full max-w-120 p-2">
@@ -43,6 +43,15 @@ export function Footer() {
               )}
               onClick={() => {
                 setActiveTab(index);
+                switch (tab) {
+                  case "新增":
+                    router.push("/follow");
+                    break;
+
+                  default:
+                    router.push("/");
+                    break;
+                }
               }}
               type="button"
             >

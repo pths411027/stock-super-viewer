@@ -1,31 +1,16 @@
-import { fugleHandler } from "@/lib/fugle";
 import { NextRequest } from "next/server";
-import { FugleQuote } from "../hot-stock/route";
+import { getStockQuote } from "@/lib/fugle/quote";
 import { INDUSTRY_MAP } from "@/lib/const";
-import { Tickers } from "@/lib/type";
+import { getStockTickers } from "@/lib/fugle/tickers";
 
-// This route runs on-demand (not pre-rendered) since it reads request URL params.
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const q = new URL(request.url).searchParams.get("q")?.trim() ?? "";
 
-  // const { data } = await fugleHandler<{
-  //   data: Array<Tickers>;
-  // }>(
-  //   `/stock/intraday/tickers`,
-  //   { type: "EQUITY", exchange: "TWSE", market: "TSE" },
-  //   { revalidate: 60 * 60 * 24 },
-  // );
-  // console.log(data);
-  const data = [
-    {
-      symbol: "2330",
-      name: "台積電",
-      industry: "23",
-    },
-  ];
+  const { data } = await getStockTickers();
 
+  console.log("123", data);
   const items = await Promise.all(
     data
       .filter(
@@ -35,15 +20,10 @@ export async function GET(request: NextRequest) {
       )
       .slice(0, 10)
       .map(async (stock) => {
-        const quote = await fugleHandler<FugleQuote>(
-          `/stock/intraday/quote/${stock.symbol}`,
-          undefined,
-          { revalidate: 60 },
-        );
-        console.log(stock);
+        const { lastPrice } = await getStockQuote(stock.symbol);
         return {
           ...stock,
-          lastPrice: quote.lastPrice,
+          lastPrice,
           industry: INDUSTRY_MAP.get(stock.industry) ?? "ETF",
         };
       }),

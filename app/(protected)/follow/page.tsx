@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import SearchInput from "@/app/_components/SearchInput";
 import { apiClient } from "@/lib/http";
-import { Tickers } from "@/lib/type";
+import { StockQueryResponse } from "@/lib/type";
 import { StockDrawer } from "@/app/_components/StockDrawer";
 
 function StockCard({
@@ -70,9 +70,7 @@ export default function Follow() {
   const { data } = useQuery({
     queryKey: ["stocks", debouncedQ],
     queryFn: async () => {
-      const res = apiClient.get<
-        Array<Tickers & { lastPrice: number; industry: string }>
-      >("/api/stock", {
+      const res = apiClient.get<Array<StockQueryResponse>>("/api/stocks", {
         params: { q: debouncedQ },
       });
       return res;
@@ -89,7 +87,7 @@ export default function Follow() {
           setSelectedIndex(-1);
         }}
       />
-      <p className="text-primary text-sm">選擇股票</p>
+      <p className="text-primary pt-2 text-sm">選擇股票</p>
       {data?.map(({ symbol, name, industry, lastPrice }, index) => (
         <StockCard
           key={symbol}
@@ -104,11 +102,13 @@ export default function Follow() {
           }}
         />
       ))}
-      <StockDrawer
-        open={open}
-        onOpenChange={setOpen}
-        id={data?.[selectedIndex]?.symbol}
-      />
+      {data?.[selectedIndex]?.symbol && (
+        <StockDrawer
+          open={open}
+          onOpenChange={setOpen}
+          symbol={data?.[selectedIndex]?.symbol}
+        />
+      )}
     </div>
   );
 }

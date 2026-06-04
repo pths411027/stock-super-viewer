@@ -2,6 +2,8 @@
 import { cn } from "@/lib/utils";
 import { PriceLineChart } from "./PriceLineChart";
 import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/http";
+import { HotStockResponse, StockQueryResponse } from "@/lib/type";
 
 const PALETTE = [
   "#D52B1E",
@@ -28,17 +30,8 @@ export function TargetTable() {
   const { data } = useQuery({
     queryKey: ["hot-stock"],
     queryFn: async () => {
-      const res = await fetch("/api/hot-stock", { cache: "no-store" });
-      const json = await res.json();
-      return json.data as Array<{
-        id: string;
-        name: string;
-        referencePrice: number;
-        lastPrice: number;
-        total: number;
-        change: number;
-        changePercent: number;
-      }>;
+      const res = apiClient.get<Array<HotStockResponse>>("/api/hot-stock");
+      return res;
     },
     refetchInterval: 60_000,
   });
@@ -62,22 +55,25 @@ export function TargetTable() {
         ))}
       </div>
       {data?.map((i) => (
-        <div key={i.id} className={cn("z-1 flex w-full items-center p-1 px-2")}>
+        <div
+          key={i.symbol}
+          className={cn("z-1 flex w-full items-center p-1 px-2")}
+        >
           <div className="flex flex-1">
             <div
               className="text-cream size-8 rounded-sm text-center text-xs leading-8 font-bold"
-              style={{ backgroundColor: colorForId(i.id) }}
+              style={{ backgroundColor: colorForId(i.symbol) }}
             >
-              {i.id}
+              {i.symbol}
             </div>
             <div className="w-16 flex-1 pl-3">
-              <div className="text-cream font-bold">{i.id}</div>
+              <div className="text-cream font-bold">{i.symbol}</div>
               <div className="text-xs text-[#5A564E]">{i.name}</div>
             </div>
           </div>
 
-          <div className="flex justify-end">
-            <PriceLineChart id={i.id} change={i.change} />
+          <div className="flex justify-end p-2">
+            <PriceLineChart id={i.symbol} change={i.change} />
           </div>
           <div className="w-24 px-2 font-bold">
             <div

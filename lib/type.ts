@@ -1,90 +1,26 @@
-export type FugleSnapshotActives = {
-  data: Array<{
-    type: string;
-    symbol: string;
-  }>;
-};
+import { FugleQuote } from "./fugle/quote";
 
-export type Tickers = {
+export type HotStockResponse = {
   symbol: string;
   name: string;
-  industry: string;
-};
-
-export type QuoteLevel = {
-  price: number;
-  size: number;
-};
-
-export type QuoteTotal = {
-  tradeValue: number;
-  tradeVolume: number;
-  tradeVolumeAtBid: number;
-  tradeVolumeAtAsk: number;
-  transaction: number;
-  time: number;
-};
-
-export type LastTrade = {
-  bid: number;
-  ask: number;
-  price: number;
-  size: number;
-  time: number;
-  serial: number;
-};
-
-export type LastTrial = {
-  bid: number;
-  ask: number;
-  price: number;
-  size: number;
-  time: number;
-};
-
-export type FugleQuoteResponse = {
-  date: string;
-  type: string;
-  exchange: string;
-  market: string;
-  symbol: string;
-  name: string;
-
   referencePrice: number;
-  previousClose: number;
-
-  openPrice: number;
-  openTime: number;
-
-  highPrice: number;
-  highTime: number;
-
-  lowPrice: number;
-  lowTime: number;
-
-  closePrice: number;
-  closeTime: number;
-
-  avgPrice: number;
-
+  lastPrice: number;
+  total: number;
   change: number;
   changePercent: number;
-  amplitude: number;
+};
 
+export type StockQueryResponse = {
+  symbol: string;
+  industry: string;
+  name: string;
   lastPrice: number;
-  lastSize: number;
+};
 
-  bids: QuoteLevel[];
-  asks: QuoteLevel[];
+export type StockQuotaResponse = FugleQuote;
 
-  total: QuoteTotal;
-
-  lastTrade: LastTrade;
-
-  lastTrial: LastTrial;
-
-  isClose: boolean;
-
-  serial: number;
-  lastUpdated: number;
+export type StockCandlesRouteResponse = {
+  ok: true;
+  symbol: string;
+  data: number[];
 };

@@ -1,4 +1,7 @@
 "use client";
+import { FugleIntradayCandlesResponse } from "@/lib/fugle/candles";
+import { apiClient } from "@/lib/http";
+import { StockCandlesRouteResponse } from "@/lib/type";
 import { useQuery } from "@tanstack/react-query";
 import {
   Chart as ChartJS,
@@ -42,44 +45,29 @@ export const options = {
   },
 };
 
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      // label: "Dataset 1",
-      pointRadius: 0,
-      data: [100, 94, 93, 98, 103, 109, 103],
-      borderColor: "-down",
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-  ],
-};
-
 export function PriceLineChart({ id, change }: { id: string; change: number }) {
   const { data } = useQuery({
     queryKey: ["stock", "candles", id],
+
     queryFn: async () => {
-      const res = await fetch(`/api/stock/candles/${id}`, {
-        cache: "no-store",
-      });
-      const json = await res.json();
-      return json.data as Array<number>;
+      const res = apiClient.get<StockCandlesRouteResponse>(
+        `/api/stock/candles/${id}`,
+      );
+      return res;
     },
     refetchInterval: 60_000,
   });
 
   const lineData = {
     // labels,
-    labels: data?.map((_, index) => index + 1),
+    labels: data?.data?.map((_, index) => index + 1),
     datasets: [
       {
-        // label: "Dataset 1",
-        pointRadius: 1,
+        pointRadius: 0,
         data,
         borderColor: change >= 0 ? "#3bcb8e" : "#f26b6b",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        borderWidth: 1,
+        fill: true,
       },
     ],
   };
@@ -102,8 +90,13 @@ export function PriceLineChart({ id, change }: { id: string; change: number }) {
       },
       y: {
         display: false,
-        min: Math.min(...(data ?? [])) - 1,
-        max: Math.max(...(data ?? [])) + 1,
+        min: Math.min(...(data?.data ?? [])) - 1,
+        max: Math.max(...(data?.data ?? [])) + 1,
+      },
+    },
+    elements: {
+      line: {
+        capBezierPoints: true,
       },
     },
   };
