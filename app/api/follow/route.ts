@@ -57,7 +57,7 @@ export async function POST(request: Request) {
   console.log(user?.id);
 
   const { data, error } = await supabase
-    .from("follow_stock")
+    .from("follow_stocks")
     .insert({
       symbol,
       price,

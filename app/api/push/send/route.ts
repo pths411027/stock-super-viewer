@@ -1,6 +1,9 @@
 import webpush, { type PushSubscription } from "web-push";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import SupabaseInstance from "@/lib/supabase/instance";
+import { FOLLOW_STOCKS, PUSH_SUBSCRIPTIONS } from "@/lib/supabase/const";
+import { getStockQuote } from "@/lib/fugle/quote";
 
 webpush.setVapidDetails(
   process.env.WEB_PUSH_SUBJECT!,
@@ -17,69 +20,106 @@ type SendPushBody = {
   };
 };
 
+type FollowStocks = {
+  user_id: string;
+  symbol: string;
+  price: number;
+  rule: "gt" | "lt";
+  percent: number | null;
+  isTrigger: boolean;
+};
+
+type Subscriptions = {
+  user_id: string;
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+  user_agent: string;
+};
+
 export async function POST(req: Request) {
-  const supabaseUrl =
-    process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseAdmin = SupabaseInstance();
 
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
-    return Response.json(
-      {
-        error:
-          "Missing SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY",
-      },
-      { status: 500 },
-    );
-  }
-  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-
-  const { data: myData } = await supabaseAdmin
-    .from("push_subscriptions")
+  const { data: follow_stocks } = await supabaseAdmin
+    .from(FOLLOW_STOCKS)
     .select("*");
-  console.log(myData);
 
-  try {
-    // const { payload } = (await req.json()) as SendPushBody;
-    // console.log(myData);
-    const subscription = {
-      endpoint: myData?.[0].endpoint,
+  const { data: subscriptions } = await supabaseAdmin
+    .from(PUSH_SUBSCRIPTIONS)
+    .select("*");
 
+  const subscriptionHashMap = new Map();
+
+  (subscriptions as Array<Subscriptions>)?.forEach((i) => {
+    subscriptionHashMap.set(i.user_id, {
+      endpoint: i.endpoint,
       expirationTime: null,
       keys: {
-        p256dh: myData?.[0].p256dh,
-        auth: myData?.[0].auth,
+        p256dh: i.p256dh,
+        auth: i.auth,
       },
-    };
+    });
+  });
 
-    if (!subscription?.endpoint) {
-      return NextResponse.json(
-        { ok: false, message: "Missing subscription" },
-        { status: 400 },
-      );
+  const result: Array<
+    FollowStocks & {
+      name: string;
+      change: number;
+      changePercent: number;
+      lastPrice: number;
+      subscription: {
+        endpoint: string;
+        expirationTime: number | null;
+        keys: {
+          p256dh: string;
+          auth: string;
+        };
+      };
+    }
+  > = [];
+
+  for (const stock of follow_stocks as Array<FollowStocks>) {
+    if (stock.isTrigger) continue;
+
+    const { name, lastPrice, change, changePercent } = await getStockQuote(
+      stock.symbol,
+    );
+
+    if (stock.rule === "gt" && lastPrice && lastPrice >= stock.price) {
+      result.push({
+        ...stock,
+        name,
+        change: change ?? 0,
+        changePercent: changePercent ?? 0,
+        lastPrice: lastPrice ?? 0,
+        subscription: subscriptionHashMap.get(stock.user_id) ?? null,
+      });
     }
 
-    const data = await webpush.sendNotification(
-      subscription,
-      JSON.stringify({
-        title: "mock title",
-        body: "mock body",
-        url: "https://swag.live",
-      }),
-    );
-    console.log("74", data);
-
-    return NextResponse.json({ ok: true });
-  } catch (error) {
-    console.error("send push error:", error);
-
-    return NextResponse.json(
-      { ok: false, message: "Failed to send push" },
-      { status: 500 },
-    );
+    if (stock.rule === "lt" && lastPrice && lastPrice <= stock.price) {
+      result.push({
+        ...stock,
+        name,
+        change: change ?? 0,
+        changePercent: changePercent ?? 0,
+        lastPrice: lastPrice ?? 0,
+        subscription: subscriptionHashMap.get(stock.user_id) ?? null,
+      });
+    }
   }
+
+  const sendResult = await Promise.all(
+    result.map(async (i) => {
+      await webpush.sendNotification(
+        i.subscription,
+        JSON.stringify({
+          title: "[股票通知]",
+          body: `${i.name}已到 ${i.rule === "gt" ? "高於" : "低於"}達您的目標價格 ${i.price}`,
+          url: `https://stockviewer.info/stock/${i.symbol}`,
+        }),
+      );
+    }),
+  );
+
+  return NextResponse.json({ ok: true, data: sendResult });
 }

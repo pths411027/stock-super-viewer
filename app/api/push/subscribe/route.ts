@@ -1,3 +1,4 @@
+import { PUSH_SUBSCRIPTIONS } from "@/lib/supabase/const";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 
@@ -42,16 +43,12 @@ export async function POST(request: Request) {
     error: authError,
   } = await supabase.auth.getUser();
 
-  const supabaseAdmin = createClient(
-    supabaseUrl,
-    supabaseServiceRoleKey,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
+  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
     },
-  );
+  });
 
   if (authError || !user) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -86,7 +83,7 @@ export async function POST(request: Request) {
 
   const { data: existingSubscription, error: existingError } =
     await supabaseAdmin
-      .from("push_subscriptions")
+      .from(PUSH_SUBSCRIPTIONS)
       .select("id")
       .eq("endpoint", endpoint)
       .maybeSingle();
@@ -97,7 +94,7 @@ export async function POST(request: Request) {
 
   if (existingSubscription) {
     const { data, error } = await supabaseAdmin
-      .from("push_subscriptions")
+      .from(PUSH_SUBSCRIPTIONS)
       .update(subscriptionRecord)
       .eq("id", existingSubscription.id)
       .select()
@@ -111,7 +108,7 @@ export async function POST(request: Request) {
   }
 
   const { data, error } = await supabaseAdmin
-    .from("push_subscriptions")
+    .from(PUSH_SUBSCRIPTIONS)
     .insert(subscriptionRecord)
     .select()
     .single();
