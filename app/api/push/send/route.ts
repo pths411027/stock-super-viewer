@@ -1,6 +1,5 @@
-import webpush, { type PushSubscription } from "web-push";
+import webpush from "web-push";
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import SupabaseInstance from "@/lib/supabase/instance";
 import { FOLLOW_STOCKS, PUSH_SUBSCRIPTIONS } from "@/lib/supabase/const";
 import { getStockQuote } from "@/lib/fugle/quote";
@@ -11,16 +10,8 @@ webpush.setVapidDetails(
   process.env.WEB_PUSH_PRIVATE_KEY!,
 );
 
-type SendPushBody = {
-  subscription: PushSubscription;
-  payload: {
-    title: string;
-    body: string;
-    url?: string;
-  };
-};
-
 type FollowStocks = {
+  id: number;
   user_id: string;
   symbol: string;
   price: number;
@@ -37,7 +28,7 @@ type Subscriptions = {
   user_agent: string;
 };
 
-export async function POST(req: Request) {
+export async function POST() {
   const supabaseAdmin = SupabaseInstance();
 
   const { data: follow_stocks } = await supabaseAdmin
@@ -108,8 +99,12 @@ export async function POST(req: Request) {
     }
   }
 
-  const sendResult = await Promise.all(
+  const sendResults = await Promise.allSettled(
     result.map(async (i) => {
+      if (!i.subscription) {
+        throw new Error(`Missing subscription for user ${i.user_id}`);
+      }
+
       await webpush.sendNotification(
         i.subscription,
         JSON.stringify({
@@ -118,8 +113,37 @@ export async function POST(req: Request) {
           url: `https://stockviewer.info/stock/${i.symbol}`,
         }),
       );
+
+      return i.id;
     }),
   );
 
-  return NextResponse.json({ ok: true, data: sendResult });
+  const triggeredIds = sendResults
+    .filter(
+      (item): item is PromiseFulfilledResult<number> =>
+        item.status === "fulfilled",
+    )
+    .map((item) => item.value);
+
+  if (triggeredIds.length > 0) {
+    const { error: updateError } = await supabaseAdmin
+      .from(FOLLOW_STOCKS)
+      .update({ isTrigger: true })
+      .in("id", triggeredIds);
+
+    if (updateError) {
+      return NextResponse.json(
+        { ok: false, error: updateError.message },
+        { status: 500 },
+      );
+    }
+  }
+
+  return NextResponse.json({
+    ok: true,
+    data: {
+      triggeredIds,
+      sendResults,
+    },
+  });
 }
