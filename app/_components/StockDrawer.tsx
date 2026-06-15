@@ -15,13 +15,20 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { StockQuotaResponse } from "@/lib/type";
 import { FugleQuote } from "@/lib/fugle/quote";
+import { registerPush } from "@/lib/fcm";
 
-function Content({ symbol, data }: { symbol: string; data: FugleQuote }) {
+function Content({
+  symbol,
+  data,
+  onSuccess,
+}: {
+  symbol: string;
+  data: FugleQuote;
+  onSuccess: () => void;
+}) {
   const lastValue = data?.lastPrice ?? 0;
   const [value, setValue] = useState(lastValue);
   const [rule, setRule] = useState("gt");
-
-  console.log("ddd", data);
 
   const { mutate } = useMutation({
     mutationFn: async () => {
@@ -46,6 +53,8 @@ function Content({ symbol, data }: { symbol: string; data: FugleQuote }) {
 
       return res.json();
     },
+    onSuccess: onSuccess,
+    onMutate: registerPush,
   });
   return (
     <div className="mx-auto mt-2 flex w-full max-w-sm flex-col gap-2">
@@ -210,14 +219,10 @@ export function StockDrawer({
   symbol,
   open,
   onOpenChange,
-  title = "Move Goal",
-  description = "Set your daily activity goal.",
 }: {
   symbol: string;
   open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  title?: string;
-  description?: string;
+  onOpenChange: (open: boolean) => void;
 }) {
   const { data, isSuccess } = useQuery({
     queryKey: ["stock", symbol],
@@ -238,7 +243,13 @@ export function StockDrawer({
     >
       <DrawerTitle className="hidden">Title</DrawerTitle>
       <DrawerContent className="bg-background">
-        {isSuccess && <Content symbol={symbol} data={data} />}
+        {isSuccess && (
+          <Content
+            symbol={symbol}
+            data={data}
+            onSuccess={() => onOpenChange(false)}
+          />
+        )}
       </DrawerContent>
     </Drawer>
   );

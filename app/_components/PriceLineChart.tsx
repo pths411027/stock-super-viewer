@@ -1,5 +1,4 @@
 "use client";
-import { FugleIntradayCandlesResponse } from "@/lib/fugle/candles";
 import { apiClient } from "@/lib/http";
 import { StockCandlesRouteResponse } from "@/lib/type";
 import { useQuery } from "@tanstack/react-query";
@@ -25,26 +24,6 @@ ChartJS.register(
   Legend,
 );
 
-export const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    title: {
-      display: false,
-      // text: "Chart.js Line Chart",
-    },
-  },
-  scales: {
-    x: { display: false, grid: { display: false }, ticks: { display: false } },
-    y: {
-      display: false,
-      min: 80,
-      max: 120,
-    },
-  },
-};
-
 export function PriceLineChart({ id, change }: { id: string; change: number }) {
   const { data } = useQuery({
     queryKey: ["stock", "candles", id],
@@ -59,8 +38,7 @@ export function PriceLineChart({ id, change }: { id: string; change: number }) {
   });
 
   const lineData = {
-    // labels,
-    labels: data?.data?.map((_, index) => index + 1),
+    labels: data?.map((_, index) => index + 1),
     datasets: [
       {
         pointRadius: 0,
@@ -79,7 +57,6 @@ export function PriceLineChart({ id, change }: { id: string; change: number }) {
       legend: { display: false },
       title: {
         display: false,
-        // text: "Chart.js Line Chart",
       },
     },
     scales: {
@@ -90,8 +67,8 @@ export function PriceLineChart({ id, change }: { id: string; change: number }) {
       },
       y: {
         display: false,
-        min: Math.min(...(data?.data ?? [])) - 1,
-        max: Math.max(...(data?.data ?? [])) + 1,
+        min: Math.min(...(data ?? [])) - 1,
+        max: Math.max(...(data ?? [])) + 1,
       },
     },
     elements: {
@@ -101,9 +78,5 @@ export function PriceLineChart({ id, change }: { id: string; change: number }) {
     },
   };
 
-  return (
-    <div className="w-15">
-      <Line options={options} data={lineData} height={30} width={60} />
-    </div>
-  );
+  return <Line options={options} data={lineData} height={30} width={60} />;
 }

@@ -19,8 +19,14 @@ export type StockQueryResponse = {
 
 export type StockQuotaResponse = FugleQuote;
 
-export type StockCandlesRouteResponse = {
-  ok: true;
-  symbol: string;
-  data: number[];
+export type StockCandlesRouteResponse = number[];
+
+export type StockKLineCandle = {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
 };
+
+export type StockKLineRouteResponse = StockKLineCandle[];

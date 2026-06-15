@@ -24,8 +24,7 @@ export async function getStockCandles(
   revalidate = 60,
 ): Promise<FugleIntradayCandlesResponse> {
   const res = await fetch(
-    // exchange: "TWSE", market: "TSE"
-    `https://api.fugle.tw/marketdata/v1.0/stock/intraday/candles/${symbol}`,
+    `https://api.fugle.tw/marketdata/v1.0/stock/intraday/candles/${symbol}?timeframe=10`,
     {
       headers: {
         "X-API-KEY": API_KEY!,

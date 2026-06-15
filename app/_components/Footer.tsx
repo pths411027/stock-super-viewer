@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-const TABS = ["行情", "標的", "新增", "我的"] as const;
+const TABS = ["行情", "個股", "新增", "我的"] as const;
 
 function TabIndicator({
   tabLength,
@@ -47,7 +47,6 @@ export function Footer() {
                   case "新增":
                     router.push("/follow");
                     break;
-
                   default:
                     router.push("/");
                     break;

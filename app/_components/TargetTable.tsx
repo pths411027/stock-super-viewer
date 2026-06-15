@@ -72,7 +72,7 @@ export function TargetTable() {
             </div>
           </div>
 
-          <div className="flex justify-end p-2">
+          <div className="flex w-15 justify-end p-2">
             <PriceLineChart id={i.symbol} change={i.change} />
           </div>
           <div className="w-24 px-2 font-bold">
